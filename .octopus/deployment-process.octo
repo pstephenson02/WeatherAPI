@@ -83,16 +83,3 @@ steps "Deploy WeatherAPI to IIS" {
         Octopus_Action_TargetRoles = "web"
     }
 }
-
-steps "Manual Intervention Required 2" {
-
-    actions "Manual Intervention Required 2" {
-        action_type = "Octopus.Manual"
-
-        properties {
-            Octopus_Action_Manual_BlockConcurrentDeployments = "False"
-            Octopus_Action_Manual_Instructions = "test"
-            Octopus_Action_Manual_ResponsibleTeamIds = "teams-everyone"
-        }
-    }
-}
