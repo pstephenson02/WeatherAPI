@@ -41,8 +41,8 @@ steps "Deploy WeatherAPI to IIS" {
 
         packages {
             acquisition_location = "Server"
-            feed_id_or_name = "GitHub Feed"
-            package_id = "pstephenson02/WeatherAPI"
+            feed_id_or_name = "Octopus Server (built-in)"
+            package_id = "WeatherAPI"
 
             properties {
                 SelectionMode = "immediate"
@@ -70,8 +70,8 @@ steps "Deploy WeatherAPI to IIS" {
             Octopus_Action_IISWebSite_WebApplication_VirtualPath = "api"
             Octopus_Action_WebApplication_WebRootType = "packageRoot"
             Octopus_Action_IISWebSite_WebApplication_ApplicationPoolName = "DefaultAppPool"
-            Octopus_Action_Package_PackageId = "pstephenson02/WeatherAPI"
-            Octopus_Action_Package_FeedId = "GitHub Feed"
+            Octopus_Action_Package_PackageId = "WeatherAPI"
+            Octopus_Action_Package_FeedId = "Octopus Server (built-in)"
             Octopus_Action_Package_DownloadOnTentacle = "False"
             Octopus_Action_SubstituteInFiles_TargetFiles = "appsettings.json"
             Octopus_Action_Package_AutomaticallyUpdateAppSettingsAndConnectionStrings = "True"
