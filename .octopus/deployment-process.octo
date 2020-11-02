@@ -1,0 +1,98 @@
+steps "Manual Intervention Required" {
+
+    actions "Manual Intervention Required" {
+        action_type = "Octopus.Manual"
+        environments = ["PROD"]
+
+        properties {
+            Octopus_Action_Manual_BlockConcurrentDeployments = "False"
+            Octopus_Action_Manual_Instructions = "Please approve PROD deployment"
+            Octopus_Action_Manual_ResponsibleTeamIds = "teams-administrators"
+        }
+    }
+}
+
+steps "Run Database Migrations" {
+
+    actions "Run Database Migrations" {
+        action_type = "Octopus.Script"
+
+        properties {
+            Octopus_Action_RunOnServer = "false"
+            Octopus_Action_Script_ScriptSource = "Inline"
+            Octopus_Action_Script_Syntax = "PowerShell"
+            Octopus_Action_Script_ScriptBody = <<-EOT
+                    Write-Host "Running database migrations..."
+                    Write-Host "Database migrations complete!"
+                EOT
+        }
+    }
+
+    properties {
+        Octopus_Action_TargetRoles = "db,web,app"
+    }
+}
+
+steps "Deploy WeatherAPI to IIS" {
+
+    actions "Deploy WeatherAPI to IIS" {
+        action_type = "Octopus.IIS"
+        worker_pool_variable = ""
+
+        packages {
+            acquisition_location = "Server"
+            feed_id_or_name = "Octopus Server (built-in)"
+            package_id = "WeatherAPI"
+
+            properties {
+                SelectionMode = "immediate"
+            }
+        }
+
+        properties {
+            Octopus_Action_IISWebSite_DeploymentType = "webApplication"
+            Octopus_Action_IISWebSite_CreateOrUpdateWebSite = "False"
+            Octopus_Action_IISWebSite_Bindings = "[{\"protocol\":\"http\",\"port\":\"80\",\"host\":\"\",\"thumbprint\":null,\"certificateVariable\":null,\"requireSni\":\"False\",\"enabled\":\"True\"}]"
+            Octopus_Action_IISWebSite_ApplicationPoolFrameworkVersion = "v4.0"
+            Octopus_Action_IISWebSite_ApplicationPoolIdentityType = "ApplicationPoolIdentity"
+            Octopus_Action_IISWebSite_EnableAnonymousAuthentication = "False"
+            Octopus_Action_IISWebSite_EnableBasicAuthentication = "False"
+            Octopus_Action_IISWebSite_EnableWindowsAuthentication = "True"
+            Octopus_Action_IISWebSite_WebApplication_ApplicationPoolFrameworkVersion = "v4.0"
+            Octopus_Action_IISWebSite_WebApplication_ApplicationPoolIdentityType = "ApplicationPoolIdentity"
+            Octopus_Action_EnabledFeatures = "Octopus.Features.IISWebSite,Octopus.Features.ConfigurationVariables,Octopus.Features.ConfigurationTransforms,Octopus.Features.SubstituteInFiles"
+            Octopus_Action_IISWebSite_WebRootType = "packageRoot"
+            Octopus_Action_IISWebSite_StartApplicationPool = "True"
+            Octopus_Action_IISWebSite_StartWebSite = "True"
+            Octopus_Action_IISWebSite_VirtualDirectory_CreateOrUpdate = "False"
+            Octopus_Action_IISWebSite_WebApplication_CreateOrUpdate = "True"
+            Octopus_Action_IISWebSite_WebApplication_WebSiteName = "Default Web Site"
+            Octopus_Action_IISWebSite_WebApplication_VirtualPath = "api"
+            Octopus_Action_WebApplication_WebRootType = "packageRoot"
+            Octopus_Action_IISWebSite_WebApplication_ApplicationPoolName = "DefaultAppPool"
+            Octopus_Action_Package_PackageId = "WeatherAPI"
+            Octopus_Action_Package_FeedId = "Octopus Server (built-in)"
+            Octopus_Action_Package_DownloadOnTentacle = "False"
+            Octopus_Action_SubstituteInFiles_TargetFiles = "appsettings.json"
+            Octopus_Action_Package_AutomaticallyUpdateAppSettingsAndConnectionStrings = "True"
+            Octopus_Action_Package_AutomaticallyRunConfigurationTransformationFiles = "True"
+        }
+    }
+
+    properties {
+        Octopus_Action_TargetRoles = "web"
+    }
+}
+
+steps "Manual Intervention Required 2" {
+
+    actions "Manual Intervention Required 2" {
+        action_type = "Octopus.Manual"
+
+        properties {
+            Octopus_Action_Manual_BlockConcurrentDeployments = "False"
+            Octopus_Action_Manual_Instructions = "test"
+            Octopus_Action_Manual_ResponsibleTeamIds = "teams-everyone"
+        }
+    }
+}
